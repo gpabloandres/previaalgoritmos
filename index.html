@@ -3,586 +3,668 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía de Estudio de Algoritmos</title>
+    <title>Guía de Recuperación: Algoritmos</title>
+    
+    <!-- Carga de Librerías (React, ReactDOM, Babel, Tailwind) -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fuentes -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Estilos Base -->
     <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         .code-bg { background-color: #1e293b; color: #e2e8f0; }
         .fade-in { animation: fadeIn 0.5s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .progress-bar { transition: width 0.5s ease-out; }
-        #module-view { display: none; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        
+        /* Scrollbar personalizada para bloques de código */
+        .custom-scrollbar::-webkit-scrollbar { height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 4px; }
     </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-900">
+<body>
+    <div id="root"></div>
 
-    <div id="app">
-        <!-- El contenido se generará aquí -->
-    </div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-    <script>
-        // --- ICONOS SVG (reemplazo de lucide-react) ---
-        const icons = {
-            BookOpen: (size = 24) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>`,
-            Code: (size = 24) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>`,
-            CheckCircle: (size = 24) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
-            Play: (size = 24, fill = 'none') => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`,
-            Terminal: (size = 24) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>`,
-            Database: (size = 24) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>`,
-            AlertCircle: (size = 24) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`,
-            RefreshCw: (size = 24) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v6h6"></path><path d="M21 12A9 9 0 0 0 6 5.3L3 8"></path><path d="M21 22v-6h-6"></path><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"></path></svg>`,
-            ChevronRight: (size = 24) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>`,
-            Home: (size = 24) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>`,
-            FunctionSquare: (size = 24) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><path d="M9 17c2 0 2.8-1 2.8-2.8V10c0-2 1.2-3.2 3.2-3.2"></path></svg>`,
-            Save: (size = 24) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>`,
-        };
-        
+        // --- ICONOS (Definidos manualmente para no depender de librerías externas complejas) ---
+        const Icon = ({ children, size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                {children}
+            </svg>
+        );
+
+        const Terminal = (props) => <Icon {...props}><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></Icon>;
+        const RefreshCw = (props) => <Icon {...props}><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></Icon>;
+        const Layers = (props) => <Icon {...props}><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></Icon>;
+        const Box = (props) => <Icon {...props}><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></Icon>;
+        const Save = (props) => <Icon {...props}><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></Icon>;
+        const BookOpen = (props) => <Icon {...props}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></Icon>;
+        const Code = (props) => <Icon {...props}><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></Icon>;
+        const FileText = (props) => <Icon {...props}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></Icon>;
+        const CheckCircle = (props) => <Icon {...props}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></Icon>;
+        const AlertCircle = (props) => <Icon {...props}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></Icon>;
+        const Play = (props) => <Icon {...props}><polygon points="5 3 19 12 5 21 5 3"></polygon></Icon>;
+        const ChevronRight = (props) => <Icon {...props}><polyline points="9 18 15 12 9 6"></polyline></Icon>;
+        const Home = (props) => <Icon {...props}><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></Icon>;
+        const PenTool = (props) => <Icon {...props}><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></Icon>;
+
         // --- DATOS DEL CONTENIDO ---
+
         const modulesData = [
-    {
-        id: 'fundamentos',
-        title: 'Módulo 1: Fundamentos',
-        icon: icons.Terminal(24),
-        description: 'Variables, Tipos, Operadores y Buenas Prácticas.',
-        theory: [
             {
-                title: 'Variables y Tipos',
-                content: 'Las variables guardan datos. Python infiere el tipo (int, float, str, bool).',
-                code: `nombre = "Ana"  # str\nedad = 17       # int\naltura = 1.65   # float`
+                id: 'fundamentos',
+                title: 'Módulo 1: Fundamentos y Strings',
+                icon: <Terminal size={24} />,
+                description: 'Variables, Tipos, Input y Manipulación de Texto.',
+                theory: [
+                    {
+                        title: 'Variables y Tipos',
+                        content: 'Python detecta automáticamente si el dato es texto (str), entero (int) o decimal (float).',
+                        code: `precio = 19.99  # float\nedad = 17       # int`
+                    },
+                    {
+                        title: 'Validación de Texto (.lower)',
+                        content: 'Para comparar textos sin importar mayúsculas, usamos métodos como .lower(). Fundamental para inputs de usuario.',
+                        code: `respuesta = input("Animal: ").lower()\nif respuesta == "zorro": ...`
+                    }
+                ],
+                projectLink: 'Usado en "AdivinaSitios" para validar respuestas (input().lower()).',
+                quiz: [
+                    {
+                        question: "En el juego Adivina Sitios, ¿por qué usamos `.lower()` en el input?",
+                        code: 'intento = input("¿Qué animal es?").lower()',
+                        options: ["Para convertir a mayúsculas", "Para ignorar mayúsculas/minúsculas al comparar", "Para borrar espacios", "Para traducir"],
+                        correct: 1,
+                        explanation: "Permite que si el usuario escribe 'Zorro', 'ZORRO' o 'zorro', el programa lo entienda siempre como minúscula y acierte."
+                    },
+                    {
+                        question: "Para pedir la cantidad de jugadores (número), ¿qué función es obligatoria?",
+                        code: 'jugadores = ____(input("Cantidad: "))',
+                        options: ["str", "int", "print", "float"],
+                        correct: 1,
+                        explanation: "input() devuelve siempre texto (str). Necesitamos int() para convertirlo a número y poder hacer cálculos."
+                    },
+                    {
+                        question: "¿Cuál es el resultado de concatenar estas cadenas?",
+                        code: 'print("Juego: " + "Cartas")',
+                        options: ["Juego: Cartas", "Juego:Cartas", "Error", "JuegoCartas"],
+                        correct: 0,
+                        explanation: "El operador + une las cadenas tal cual están. Como el primer string tiene un espacio al final ('Juego: '), este se conserva."
+                    },
+                    {
+                        question: "¿Cómo se nombra correctamente una variable en Python (convención)?",
+                        options: ["NombreJuego", "nombre juego", "nombre_juego", "1nombre"],
+                        correct: 2,
+                        explanation: "La convención 'snake_case' (minúsculas separadas por guion bajo) es la estándar en Python."
+                    },
+                    {
+                        question: "¿Qué permite hacer el operador `f` antes de las comillas?",
+                        code: 'print(f"Hola {nombre}")',
+                        options: ["Da error", "Formatea el texto insertando variables", "Lo hace flotante", "Nada"],
+                        correct: 1,
+                        explanation: "Las f-strings (Formatted strings) permiten incrustar variables directamente dentro del texto usando llaves {}."
+                    }
+                ]
             },
             {
-                title: 'Entrada y Salida',
-                content: 'input() lee texto del teclado. print() muestra datos en consola.',
-                code: `dato = input("Ingresa algo: ")\nprint(f"Escribiste: {dato}")`
+                id: 'control',
+                title: 'Módulo 2: Control y Bucles',
+                icon: <RefreshCw size={24} />,
+                description: 'Menús interactivos (While), Enumeración y Condicionales.',
+                theory: [
+                    {
+                        title: 'Bucle While (Menús)',
+                        content: 'Mantiene el programa corriendo infinitamente hasta que una condición (break) lo detenga.',
+                        code: `while True:\n    opcion = int(input("..."))\n    if opcion == 6:\n        break`
+                    },
+                    {
+                        title: 'Función Enumerate',
+                        content: 'Recorre una lista entregando dos valores a la vez: el índice (posición) y el dato.',
+                        code: `for i, juego in enumerate(lista):\n    print(f"{i+1}. {juego}")`
+                    }
+                ],
+                projectLink: 'Usado en "AppConsolaJgoMesa" para numerar visualmente la lista de juegos.',
+                quiz: [
+                    {
+                        question: "En tu menú de Juegos, ¿qué hace la instrucción `break` cuando eliges Salir?",
+                        code: `if opcion == 6:\n    print("Adiós")\n    break`,
+                        options: ["Reinicia el menú", "Pausa el programa", "Rompe el bucle while y termina", "Borra la pantalla"],
+                        correct: 2,
+                        explanation: "break corta inmediatamente el ciclo del while True, permitiendo que el flujo del programa salga del menú."
+                    },
+                    {
+                        question: "¿Qué devuelve `enumerate(biblioteca)` en cada iteración?",
+                        options: ["Ordena alfabéticamente", "El índice (posición) y el elemento", "Cuenta el total", "Solo el elemento"],
+                        correct: 1,
+                        explanation: "Devuelve tuplas (índice, valor), lo que nos permite poner números (1., 2., 3.) automáticamente al listar."
+                    },
+                    {
+                        question: "¿Qué error tiene este condicional?",
+                        code: `if opcion = 1:`,
+                        options: ["Funciona bien", "Error de sintaxis (debe ser ==)", "Faltan paréntesis", "Sobra espacio"],
+                        correct: 1,
+                        explanation: "Un solo `=` es ASIGNACIÓN. Para COMPARAR en un if, siempre debemos usar doble igual `==`."
+                    },
+                    {
+                        question: "En Adivina Sitios, usamos `intentos += 1`. ¿Qué significa?",
+                        options: ["Suma 1 a la variable intentos", "Resetea a 1", "Compara con 1", "Resta 1"],
+                        correct: 0,
+                        explanation: "`+= 1` es el atajo para escribir `intentos = intentos + 1`. Incrementa el contador."
+                    },
+                    {
+                        question: "Para filtrar juegos y eliminar uno, usaron esta estructura eficiente:",
+                        code: `[juego for juego in biblio if ... ]`,
+                        options: ["Comprensión de listas", "Bucle While", "Diccionario", "Tupla"],
+                        correct: 0,
+                        explanation: "Es una 'List Comprehension'. Crea una lista nueva que incluye solo los juegos que NO queremos borrar."
+                    }
+                ]
+            },
+            {
+                id: 'datos',
+                title: 'Módulo 3: Estructuras Complejas',
+                icon: <Layers size={24} />,
+                description: 'Listas de Diccionarios y manejo de claves.',
+                theory: [
+                    {
+                        title: 'Listas de Diccionarios',
+                        content: 'La estructura principal de sus proyectos. Una lista donde CADA ítem es un diccionario.',
+                        code: `juegos = [\n  {"nombre": "TEG", "jug": 6},\n  {"nombre": "Ludo", "jug": 4}\n]`
+                    },
+                    {
+                        title: 'Acceso a Datos Anidados',
+                        content: 'Para llegar al dato interno, usamos índice de lista [] y luego clave de diccionario [].',
+                        code: `print(juegos[0]["nombre"]) # Imprime "TEG"`
+                    }
+                ],
+                projectLink: 'Base central de "AppConsolaJgoMesa" (variable biblioteca_juegos).',
+                quiz: [
+                    {
+                        question: "En `biblioteca_juegos`, ¿de qué tipo es cada elemento guardado en la lista?",
+                        code: `biblioteca_juegos.append(nuevo_juego)`,
+                        options: ["String", "Entero", "Diccionario", "Lista"],
+                        correct: 2,
+                        explanation: "La variable `nuevo_juego` es un diccionario `{...}` que luego se agrega a la lista."
+                    },
+                    {
+                        question: "¿Cómo accedo a la cantidad de jugadores del PRIMER juego de la lista?",
+                        code: `biblio = [{"n": "Uno", "j": 4}, ...]`,
+                        options: ["biblio[0]", "biblio['j']", "biblio[0]['j']", "biblio.get('j')"],
+                        correct: 2,
+                        explanation: "Primero entras a la posición 0 de la lista (`biblio[0]`) y a ese objeto le pides la clave `['j']`."
+                    },
+                    {
+                        question: "En Adivina Sitios, `list(animales.keys())` nos da:",
+                        options: ["Las descripciones", "Los nombres de los animales", "Todo el diccionario", "Un número"],
+                        correct: 1,
+                        explanation: "Las 'keys' (claves) son los nombres (ej: 'Zorro'). Los valores son las descripciones."
+                    },
+                    {
+                        question: "¿Qué pasa si intento acceder a `juego['precio']` y esa clave no existe?",
+                        options: ["Devuelve 0", "Crea la clave", "Da KeyError (Error)", "Devuelve False"],
+                        correct: 2,
+                        explanation: "Python arroja un error `KeyError`. Por eso es importante saber qué claves tiene nuestro diccionario."
+                    },
+                    {
+                        question: "Para verificar si la lista NO tiene elementos, usamos:",
+                        code: `if not biblioteca_juegos:`,
+                        options: ["Verdadero si tiene datos", "Verdadero si está vacía", "Da error", "Borra la lista"],
+                        correct: 1,
+                        explanation: "En Python, una lista vacía `[]` se evalúa como `False`. Por tanto, `not False` es `True`."
+                    }
+                ]
+            },
+            {
+                id: 'funciones',
+                title: 'Módulo 4: Funciones y Módulos',
+                icon: <Box size={24} />,
+                description: 'Organización de código, parámetros e importaciones.',
+                theory: [
+                    {
+                        title: 'Módulos (Import)',
+                        content: 'Permite usar código de otros archivos o librerías estándar.',
+                        code: `import random\nimport funciones\n\nrandom.choice(lista)`
+                    },
+                    {
+                        title: 'Llamada a Funciones',
+                        content: '¡Cuidado! Nombrar la función no la ejecuta. Necesitas los paréntesis ().',
+                        code: `funciones.menu()  # Correcto\nfunciones.menu    # No hace nada`
+                    }
+                ],
+                projectLink: 'Usado en "AdivinaSitios" (random) y "GestorInventario" (funciones propias).',
+                quiz: [
+                    {
+                        question: "¿Para qué sirve `import random` en el juego de Adivinanzas?",
+                        options: ["Para gráficos", "Para elegir un animal al azar", "Para limpiar pantalla", "Para matemáticas"],
+                        correct: 1,
+                        explanation: "La librería `random` tiene herramientas para generar aleatoriedad, como elegir un ítem sorpresa."
+                    },
+                    {
+                        question: "En el Gestor de Inventario, ¿dónde busca Python `funciones.menu()`?",
+                        options: ["En el mismo archivo", "En un archivo llamado 'funciones.py'", "En internet", "No existe"],
+                        correct: 1,
+                        explanation: "Al hacer `import funciones`, Python busca el archivo `funciones.py` en la misma carpeta."
+                    },
+                    {
+                        question: "¿Qué es 'animal_secreto' en la definición de esta función?",
+                        code: `def verificar(intento, animal_secreto):`,
+                        options: ["Una variable global", "Un parámetro (argumento)", "El nombre de la función", "Un módulo"],
+                        correct: 1,
+                        explanation: "Es un parámetro: una variable 'hueca' que recibirá un valor cuando llamemos a la función."
+                    },
+                    {
+                        question: "¿Qué hace `random.choice(lista)`?",
+                        options: ["Ordena la lista", "Devuelve toda la lista", "Elige un elemento aleatorio", "Elimina un elemento"],
+                        correct: 2,
+                        explanation: "Es el método específico para seleccionar un elemento al azar de una secuencia."
+                    },
+                    {
+                        question: "¡Error común! En el Gestor, ¿qué pasa si escribes `funciones.salir` sin `()`?",
+                        options: ["Se ejecuta igual", "Da error", "No sucede nada", "Se borra"],
+                        correct: 2,
+                        explanation: "Si olvidas los paréntesis `()`, estás mencionando a la función pero NO la estás ejecutando. El programa seguirá de largo."
+                    }
+                ]
+            },
+            {
+                id: 'archivos',
+                title: 'Módulo 5: Persistencia y CSV',
+                icon: <Save size={24} />,
+                description: 'Leer y escribir datos separados por comas.',
+                theory: [
+                    {
+                        title: 'Formato CSV',
+                        content: 'Guardamos datos simples separándolos por comas. Es un estándar de texto plano.',
+                        code: `"Juan, 17"\n"Ana, 18"`
+                    },
+                    {
+                        title: 'Parseo (Lectura)',
+                        content: 'Al leer, limpiamos el salto de línea (strip) y separamos por la coma (split).',
+                        code: `datos = linea.strip().split(",")\nnombre = datos[0]`
+                    }
+                ],
+                projectLink: 'Implementado manualmente en "AppLecturaEscritura.py" (Agenda).',
+                quiz: [
+                    {
+                        question: "En la Agenda, usamos `.split(',')`. ¿Qué resultado obtenemos?",
+                        code: `"Juan,17".split(",")`,
+                        options: ["Borra las comas", "Una lista ['Juan', '17']", "Da error", "Un texto junto"],
+                        correct: 1,
+                        explanation: "Divide la cadena de texto en pedazos cada vez que encuentra una coma y los guarda en una lista."
+                    },
+                    {
+                        question: "¿Por qué usamos `.strip()` antes del split?",
+                        options: ["Para borrar el salto de línea (enter) invisible", "Para borrar el archivo", "Para separar nombres", "No es necesario"],
+                        correct: 0,
+                        explanation: "Las líneas leídas de un archivo traen un caracter `\\n` al final que puede romper nuestro código si no lo quitamos."
+                    },
+                    {
+                        question: "Si abro un archivo con `open('datos.txt', 'a')`, ¿qué significa la 'a'?",
+                        options: ["All (Todo)", "Administrator", "Append (Agregar al final)", "Archive"],
+                        correct: 2,
+                        explanation: "El modo 'a' permite escribir información nueva al final del archivo sin borrar lo que ya existía."
+                    },
+                    {
+                        question: "Al guardar, ¿por qué sumamos `+ '\\n'` al final del string?",
+                        code: `archivo.write(nombre + ", " + edad + "\\n")`,
+                        options: ["Para cerrar el archivo", "Para crear un salto de línea", "Es un error", "Para decorar"],
+                        correct: 1,
+                        explanation: "Sin el `\\n`, el siguiente dato se escribiría pegado al anterior en la misma línea. Necesitamos el 'Enter'."
+                    },
+                    {
+                        question: "¿Qué estructura usamos en memoria (RAM) para manejar la agenda antes de guardar?",
+                        options: ["Lista", "Diccionario", "Tupla", "String"],
+                        correct: 1,
+                        explanation: "Usaron `agenda = {}` donde la clave era el nombre y el valor la edad, para acceder rápido a los datos."
+                    }
+                ]
             }
-        ],
-        projectLink: 'Base de todos los proyectos (variables, print, input).',
-        quiz: [
-            {
-                question: "¿Qué tipo de dato es `precio = 19.99`?",
-                options: ["int", "str", "float", "bool"],
-                correct: 2,
-                explanation: "Al tener decimales, Python lo interpreta como un número de punto flotante (float)."
-            },
-            {
-                question: "Para pedir una edad numérica, ¿qué función falta aquí?",
-                code: 'edad = ____(input("Edad: "))',
-                options: ["str", "int", "print", "float"],
-                correct: 1,
-                explanation: "input() devuelve texto. Necesitamos int() para convertirlo a número entero."
-            },
-            {
-                question: "¿Cuál es el resultado de esta operación entre textos?",
-                code: 'print("5" + "5")',
-                options: ["10", "55", "Error", "10.0"],
-                correct: 1,
-                explanation: "Al ser cadenas de texto (str), el operador + las concatena (une), no las suma matemáticamente."
-            },
-            {
-                question: "¿Cuál es una variable escrita correctamente (Snake Case)?",
-                options: ["MiVariable", "mi variable", "mi_variable", "2variable"],
-                correct: 2,
-                explanation: "En Python, la convención es usar minúsculas separadas por guiones bajos (snake_case)."
-            },
-            {
-                question: "¿Para qué sirve el símbolo `#`?",
-                options: ["Para importar librerías", "Para decorar", "Para comentar código que no se ejecuta", "Para cerrar el programa"],
-                correct: 2,
-                explanation: "El # indica un comentario. El intérprete ignora todo lo que esté a su derecha en esa línea."
-            }
-        ]
-    },
-    {
-        id: 'control',
-        title: 'Módulo 2: Estructuras de Control',
-        icon: icons.RefreshCw(24),
-        description: 'Lógica de decisión (If) y Repetición (Bucles).',
-        theory: [
-            {
-                title: 'Condicionales (If/Elif/Else)',
-                content: 'Ejecutan código solo si se cumple una condición verdadera.',
-                code: `if edad >= 18:\n    print("Mayor")\nelse:\n    print("Menor")`
-            },
-            {
-                title: 'Bucle While',
-                content: 'Repite un bloque MIENTRAS la condición sea True. Cuidado con los bucles infinitos.',
-                code: `contador = 5\nwhile contador > 0:\n    print(contador)\n    contador -= 1`
-            }
-        ],
-        projectLink: 'Menús de opciones (While) y validación de respuestas (If) en AdivinaSitios.',
-        quiz: [
-            {
-                question: "En el juego de adivinanza, ¿para qué sirve `break`?",
-                code: `if intento == secreto:\n    print("Ganaste")\n    break`,
-                options: ["Pausar", "Salir del bucle", "Reiniciar", "Error"],
-                correct: 1,
-                explanation: "break finaliza inmediatamente el bucle actual."
-            },
-            {
-                question: "¿Qué imprime si nota es 7?",
-                code: `if n >= 9: print("A")\nelif n >= 6: print("B")\nelse: print("C")`,
-                options: ["A", "B", "C", "A y B"],
-                correct: 1,
-                explanation: "La primera falla. La segunda (7 >= 6) es verdadera, imprime B y termina la estructura."
-            },
-            {
-                question: "¿Cuántas veces se ejecuta este bucle?",
-                code: `for i in range(3):\n    print(i)`,
-                options: ["1 vez", "2 veces", "3 veces (0, 1, 2)", "4 veces"],
-                correct: 2,
-                explanation: "range(3) genera los números 0, 1 y 2. Son 3 iteraciones."
-            },
-            {
-                question: "¿Qué pasa si olvido la indentación (sangría) dentro del `if`?",
-                options: ["Funciona igual", "Python da un IndentationError", "Se ejecuta siempre", "Se borra el código"],
-                correct: 1,
-                explanation: "Python usa la indentación para definir bloques. Si falta, dará un error de sintaxis."
-            },
-            {
-                question: "Para un menú que se repite hasta que el usuario elija salir, usamos:",
-                options: ["if", "for", "while", "input"],
-                correct: 2,
-                explanation: "El bucle while es ideal cuando no sabemos cuántas veces se repetirá la acción (depende del usuario)."
-            }
-        ]
-    },
-    {
-        id: 'datos',
-        title: 'Módulo 3: Estructuras de Datos',
-        icon: icons.Database(24),
-        description: 'Organización de información: Listas y Diccionarios.',
-        theory: [
-            {
-                title: 'Listas [ ]',
-                content: 'Colección ordenada. Se accede por posición (índice).',
-                code: `lista = ["A", "B"]\nlista.append("C") # Agrega al final`
-            },
-            {
-                title: 'Diccionarios { }',
-                content: 'Pares Clave:Valor. Accedemos por la clave, no por orden.',
-                code: `dicc = {"nombre": "Leo", "edad": 17}\nprint(dicc["nombre"])`
-            }
-        ],
-        projectLink: 'Lista de juegos (appConsola) y Diccionario de animales (AdivinaSitios).',
-        quiz: [
-            {
-                question: "¿Cómo accedo a la descripción del 'Zorro'?",
-                code: `animales = {"Zorro": "Mamífero...", "Cóndor": "Ave..."}`,
-                options: ["animales[0]", "animales.get(0)", "animales['Zorro']", "animales.Zorro"],
-                correct: 2,
-                explanation: "En diccionarios usamos la clave (key) entre corchetes o con .get()."
-            },
-            {
-                question: "¿Qué método agrega un elemento al final de una lista?",
-                options: ["add()", "push()", "append()", "insert()"],
-                correct: 2,
-                explanation: "El método .append(elemento) añade el elemento al final de la lista."
-            },
-            {
-                question: "Si `juegos = []`, ¿qué valor devuelve `len(juegos)`?",
-                options: ["0", "1", "Null", "Error"],
-                correct: 0,
-                explanation: "La función len() devuelve la cantidad de elementos. Una lista vacía tiene longitud 0."
-            },
-            {
-                question: "¿Cómo cambio el valor de una clave existente?",
-                code: `inv = {"sillas": 10}`,
-                options: ["inv['sillas'] = 12", "inv.add('sillas', 12)", "inv[1] = 12", "No se puede"],
-                correct: 0,
-                explanation: "Los diccionarios son mutables. Asignar un valor a una clave existente la sobrescribe."
-            },
-            {
-                question: "¿Cuál estructura es mejor para guardar los datos de UN alumno (nombre, edad, curso)?",
-                options: ["Lista", "Diccionario", "String", "Entero"],
-                correct: 1,
-                explanation: "El diccionario permite etiquetar cada dato (ej: 'nombre', 'edad'), lo que lo hace ideal para registros."
-            }
-        ]
-    },
-    {
-        id: 'funciones',
-        title: 'Módulo 4: Funciones',
-        icon: icons.FunctionSquare(24),
-        description: 'Creación de bloques de código reutilizables.',
-        theory: [
-            {
-                title: 'Definición (def)',
-                content: 'Creamos funciones para no repetir código. Pueden recibir parámetros.',
-                code: `def saludar(nombre):\n    print(f"Hola {nombre}")`
-            },
-            {
-                title: 'Llamada',
-                content: 'La función no hace nada hasta que la "llamamos" por su nombre.',
-                code: `saludar("Juan") # Imprime: Hola Juan`
-            }
-        ],
-        projectLink: 'Concepto clave para organizar la lógica en bloques separados.',
-        quiz: [
-            {
-                question: "¿Qué palabra reservada inicia la definición de una función?",
-                options: ["func", "function", "def", "class"],
-                correct: 2,
-                explanation: "En Python, usamos 'def' seguido del nombre de la función y paréntesis."
-            },
-            {
-                question: "¿Cómo se ejecuta (llama) a la función `calcular()`?",
-                options: ["call calcular", "calcular", "calcular()", "def calcular"],
-                correct: 2,
-                explanation: "Se necesita el nombre seguido de paréntesis () para ejecutarla."
-            },
-            {
-                question: "¿Qué son los valores dentro de los paréntesis `def suma(a, b):`?",
-                options: ["Argumentos/Parámetros", "Variables globales", "Resultados", "Comentarios"],
-                correct: 0,
-                explanation: "Son variables que reciben información desde fuera de la función para trabajar con ella."
-            },
-            {
-                question: "¿Qué instrucción se usa para que la función devuelva un resultado al código principal?",
-                options: ["print", "back", "return", "output"],
-                correct: 2,
-                explanation: "return finaliza la función y entrega un valor al lugar donde fue llamada."
-            },
-            {
-                question: "¿Cuál es la principal ventaja de usar funciones?",
-                options: ["Hacer el código más lento", "Reutilizar código y ordenarlo", "Usar más memoria", "Eliminar variables"],
-                correct: 1,
-                explanation: "Evitan la repetición de código (DRY - Don't Repeat Yourself) y hacen el programa más legible."
-            }
-        ]
-    },
-    {
-        id: 'archivos',
-        title: 'Módulo 5: Archivos',
-        icon: icons.Save(24),
-        description: 'Persistencia: Guardar y leer datos en disco.',
-        theory: [
-            {
-                title: 'Abrir (open)',
-                content: 'Se requiere la ruta y el modo: "r" (leer), "w" (escribir/sobrescribir), "a" (agregar).',
-                code: `f = open("datos.txt", "w")`
-            },
-            {
-                title: 'Cerrar (close)',
-                content: 'Es fundamental cerrar el archivo para guardar cambios y liberar memoria.',
-                code: `f.write("Hola")\nf.close()`
-            }
-        ],
-        projectLink: 'AppLecturaEscritura.py: Guardar la agenda en "datos.txt".',
-        quiz: [
-            {
-                question: "Si abro un archivo en modo 'w' (write) y ya existía...",
-                options: ["Da error", "Agrega al final", "Borra todo el contenido anterior", "Lo lee"],
-                correct: 2,
-                explanation: "El modo 'w' sobrescribe. Para agregar sin borrar se usa 'a' (append)."
-            },
-            {
-                question: "¿Qué método usaste para convertir una línea de texto CSV en una lista de datos?",
-                code: `linea.strip().split(",")`,
-                options: ["join()", "split()", "strip()", "slice()"],
-                correct: 1,
-                explanation: "split(',') corta el texto cada vez que encuentra una coma."
-            },
-            {
-                question: "¿Qué falta al final de este bloque?\n`f = open('a.txt','w')`\n`f.write('x')`",
-                options: ["f.save()", "f.end()", "f.close()", "Nada"],
-                correct: 2,
-                explanation: "Siempre se debe cerrar el archivo con .close() para asegurar que los datos se guarden."
-            },
-            {
-                question: "Para leer TODAS las líneas de un archivo en una lista, usamos:",
-                options: ["read()", "readline()", "readlines()", "getlines()"],
-                correct: 2,
-                explanation: "readlines() devuelve una lista donde cada elemento es una línea del archivo."
-            },
-            {
-                question: "¿Qué hace `linea.strip()` en tu proyecto de Agenda?",
-                options: ["Borra la línea", "Quita espacios y saltos de línea extra", "Divide la línea", "Imprime la línea"],
-                correct: 1,
-                explanation: "Limpia los caracteres invisibles como el salto de línea (\n) al inicio y final."
-            }
-        ]
-    }
-];
+        ];
 
-        // --- LÓGICA DE LA APLICACIÓN ---
-        const app = document.getElementById('app');
+        // --- COMPONENTES ---
 
-        let currentModule = null;
-        let progressMap = {
-            'fundamentos': 0, 'control': 0, 'datos': 0, 'funciones': 0, 'archivos': 0
+        const QuizCard = ({ question, index, onAnswer }) => {
+            const [selected, setSelected] = useState(null);
+            const [showFeedback, setShowFeedback] = useState(false);
+
+            const handleSelect = (idx) => {
+                if (showFeedback) return;
+                setSelected(idx);
+                setShowFeedback(true);
+                onAnswer(idx === question.correct);
+            };
+
+            const isCorrect = selected === question.correct;
+
+            return (
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-4 fade-in relative overflow-hidden">
+                    {/* Indicador lateral de estado */}
+                    {showFeedback && (
+                        <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${isCorrect ? 'bg-emerald-500' : 'bg-amber-500'}`}></div>
+                    )}
+                    
+                    <div className="flex items-start gap-3 mb-4">
+                        <div className="bg-indigo-100 text-indigo-700 p-2 rounded-lg font-bold text-sm min-w-[3rem] text-center">
+                            P-{index + 1}
+                        </div>
+                        <div className="flex-1">
+                            <h3 className="font-semibold text-slate-800 text-lg leading-snug">{question.question}</h3>
+                            {question.code && (
+                                <pre className="mt-3 bg-slate-900 text-indigo-100 p-3 rounded-md text-sm font-mono overflow-x-auto border border-slate-700 shadow-inner">
+                                    {question.code}
+                                </pre>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {question.options.map((opt, idx) => {
+                            let btnClass = "p-3 rounded-lg text-left transition-all border relative ";
+                            if (!showFeedback) {
+                                btnClass += "border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 cursor-pointer hover:shadow-sm";
+                            } else {
+                                if (idx === question.correct) btnClass += "bg-emerald-50 border-emerald-500 text-emerald-800 font-medium shadow-sm";
+                                else if (idx === selected) btnClass += "bg-red-50 border-red-500 text-red-800 opacity-75";
+                                else btnClass += "opacity-40 border-slate-200 grayscale";
+                            }
+
+                            return (
+                                <button key={idx} onClick={() => handleSelect(idx)} className={btnClass} disabled={showFeedback}>
+                                    <span className="mr-2 opacity-60 font-mono text-xs">[{["A","B","C","D"][idx]}]</span>
+                                    {opt}
+                                    {showFeedback && idx === question.correct && <CheckCircle size={18} className="absolute top-3 right-3 text-emerald-600" />}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {showFeedback && (
+                        <div className={`mt-4 p-4 rounded-lg flex items-start gap-3 fade-in ${isCorrect ? 'bg-emerald-50 text-emerald-900 border border-emerald-100' : 'bg-amber-50 text-amber-900 border border-amber-100'}`}>
+                            {isCorrect ? <CheckCircle size={20} className="mt-0.5 shrink-0 text-emerald-600" /> : <AlertCircle size={20} className="mt-0.5 shrink-0 text-amber-600" />}
+                            <div>
+                                <p className="font-bold text-sm mb-1">{isCorrect ? "¡Excelente! Respuesta Correcta" : "Respuesta Incorrecta"}</p>
+                                <p className="text-sm opacity-90 leading-relaxed">{question.explanation}</p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
         };
 
-        function updateProgress(moduleId, percent) {
-            progressMap[moduleId] = Math.max(progressMap[moduleId] || 0, percent);
-            render(); 
-        }
+        const ModuleView = ({ module, onBack, onComplete }) => {
+            const [score, setScore] = useState(0);
+            const [answeredCount, setAnsweredCount] = useState(0);
 
-        function selectModule(module) {
-            currentModule = module;
-            render();
-        }
-
-        function goHome() {
-            currentModule = null;
-            render();
-        }
-
-        function render() {
-            const totalProgress = Object.values(progressMap).reduce((a, b) => a + b, 0) / modulesData.length;
-            
-            let headerHTML = `
-                <header class="bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm">
-                    <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="bg-indigo-600 p-2 rounded-lg text-white shadow-sm">
-                                ${icons.Terminal(20)}
-                            </div>
-                            <div>
-                                <h1 class="font-bold text-slate-800 text-lg leading-tight">Recuperación: Algoritmos</h1>
-                                <p class="text-xs text-slate-500 font-medium hidden md:block">Escuela Secundaria - 5to Año</p>
-                            </div>
-                        </div>
-                        <div class="flex flex-col items-end w-1/3 md:w-1/4">
-                            <div class="flex justify-between w-full text-xs font-bold text-slate-600 mb-1">
-                                <span>Avance Global</span>
-                                <span>${Math.round(totalProgress)}%</span>
-                            </div>
-                            <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                                <div class="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 progress-bar" style="width: ${totalProgress}%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </header>`;
-            
-            let mainContentHTML = '';
-            if (!currentModule) {
-                mainContentHTML = `
-                    <div class="fade-in">
-                        <div class="text-center mb-10">
-                            <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">Panel de Estudio</h2>
-                            <p class="text-slate-600 max-w-2xl mx-auto text-lg">
-                                Completa los 5 módulos para dominar todos los temas del examen. <br/>
-                                <span class="text-sm text-slate-400 mt-2 block">Tu progreso se guarda mientras mantengas esta pestaña abierta.</span>
-                            </p>
-                        </div>
-                        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            ${modulesData.map(mod => {
-                                const percent = progressMap[mod.id] || 0;
-                                const isComplete = percent === 100;
-                                return `
-                                    <button data-module-id="${mod.id}" class="module-btn bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-lg hover:border-indigo-300 hover:-translate-y-1 transition-all text-left group relative overflow-hidden">
-                                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-slate-100 to-slate-200">
-                                            <div class="h-full ${isComplete ? 'bg-emerald-500' : 'bg-indigo-500'} progress-bar" style="width: ${percent}%"></div>
-                                        </div>
-                                        <div class="flex items-start justify-between mb-4 mt-2">
-                                            <div class="p-3 rounded-xl transition-colors ${isComplete ? 'bg-emerald-100 text-emerald-600' : 'bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white'}">
-                                                ${mod.icon}
-                                            </div>
-                                            ${isComplete ? `<div class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">${icons.CheckCircle(12)} Completado</div>` : `<div class="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-full">${percent}%</div>`}
-                                        </div>
-                                        <h3 class="text-lg font-bold text-slate-800 mb-2 group-hover:text-indigo-600 transition-colors">${mod.title}</h3>
-                                        <p class="text-slate-500 text-sm leading-relaxed mb-4 min-h-[40px]">${mod.description}</p>
-                                        <div class="flex items-center text-sm font-bold text-indigo-500 group-hover:translate-x-1 transition-transform">
-                                            ${percent > 0 ? 'Continuar Repaso' : 'Comenzar'} ${icons.ChevronRight(16, 'ml-1')}
-                                        </div>
-                                    </button>
-                                `;
-                            }).join('')}
-                        </div>
-                        <div class="mt-12 bg-white border border-indigo-100 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row items-center gap-6 relative overflow-hidden">
-                             <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-indigo-50 rounded-full blur-xl opacity-50"></div>
-                            <div class="bg-indigo-50 p-4 rounded-full text-indigo-600 relative z-10">
-                                ${icons.Play(32, 'currentColor')}
-                            </div>
-                            <div class="text-center md:text-left relative z-10">
-                                <h3 class="font-bold text-indigo-900 text-lg">¿Estás listo para el examen?</h3>
-                                <p class="text-indigo-700 mt-1 text-sm">
-                                    Si la barra de arriba muestra 100%, ¡felicidades! Has repasado todos los temas teóricos y prácticos de los proyectos del año.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                mainContentHTML = renderModuleView(currentModule);
-            }
-            
-            app.innerHTML = `${headerHTML}<main class="max-w-5xl mx-auto px-4 py-8">${mainContentHTML}</main>`;
-            
-            // Add event listeners after rendering
-            if (!currentModule) {
-                document.querySelectorAll('.module-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const modId = btn.getAttribute('data-module-id');
-                        const module = modulesData.find(m => m.id === modId);
-                        selectModule(module);
-                    });
-                });
-            } else {
-                document.getElementById('back-to-home').addEventListener('click', goHome);
-                const backToMenuBtn = document.getElementById('back-to-menu');
-                if(backToMenuBtn) {
-                   backToMenuBtn.addEventListener('click', goHome);
-                }
-            }
-        }
-        
-        function renderModuleView(module) {
-            let score = 0;
-            let answeredCount = 0;
-            const quizHTML = module.quiz.map((q, idx) => renderQuizCard(q, idx)).join('');
-
-            function renderQuizCard(question, index) {
-                return `
-                    <div id="quiz-${index}" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-4 fade-in">
-                        <div class="flex items-start gap-3 mb-4">
-                            <div class="bg-indigo-100 text-indigo-700 p-2 rounded-lg font-bold text-sm min-w-[3rem] text-center">P-${index + 1}</div>
-                            <div class="flex-1">
-                                <h3 class="font-semibold text-slate-800 text-lg">${question.question}</h3>
-                                ${question.code ? `<pre class="mt-2 bg-slate-900 text-indigo-100 p-3 rounded-md text-sm font-mono overflow-x-auto border border-slate-700 shadow-inner">${question.code}</pre>` : ''}
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            ${question.options.map((opt, idx) => `
-                                <button data-question-idx="${index}" data-option-idx="${idx}" class="quiz-option p-3 rounded-lg text-left transition-all border relative border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 cursor-pointer">
-                                    ${opt}
-                                </button>
-                            `).join('')}
-                        </div>
-                        <div class="feedback-container mt-4"></div>
-                    </div>`;
-            }
-
-            setTimeout(() => {
-                module.quiz.forEach((q, q_idx) => {
-                    const options = document.querySelectorAll(`[data-question-idx="${q_idx}"]`);
-                    options.forEach(button => {
-                        button.addEventListener('click', handleAnswerSelect);
-                    });
-                });
-            }, 0);
-
-            function handleAnswerSelect(event) {
-                const button = event.currentTarget;
-                const questionIdx = parseInt(button.dataset.questionIdx);
-                const optionIdx = parseInt(button.dataset.optionIdx);
-                const question = module.quiz[questionIdx];
+            const handleAnswer = (isCorrect) => {
+                if (isCorrect) setScore(s => s + 1);
+                const newCount = answeredCount + 1;
+                setAnsweredCount(newCount);
                 
-                if (button.parentElement.querySelector('.selected')) return; // Already answered
-                button.classList.add('selected');
-
-                const isCorrect = optionIdx === question.correct;
-                if (isCorrect) score++;
-                answeredCount++;
-
-                const newProgress = Math.round((answeredCount / module.quiz.length) * 100);
-                updateProgress(module.id, newProgress);
-
-                const quizCard = document.getElementById(`quiz-${questionIdx}`);
-                const options = quizCard.querySelectorAll('.quiz-option');
-
-                options.forEach((optBtn, idx) => {
-                    optBtn.disabled = true;
-                    let btnClass = "";
-                    if (idx === question.correct) btnClass = "bg-emerald-50 border-emerald-500 text-emerald-800 font-medium";
-                    else if (idx === optionIdx) btnClass = "bg-red-50 border-red-500 text-red-800";
-                    else btnClass = "opacity-50 border-slate-200";
-                    optBtn.className += ` ${btnClass}`; // Append classes
-                     if (idx === question.correct) {
-                        optBtn.innerHTML += `<span class="absolute top-3 right-3">${icons.CheckCircle(16, 'text-emerald-600')}</span>`;
-                    }
-                });
-
-                const feedbackContainer = quizCard.querySelector('.feedback-container');
-                feedbackContainer.innerHTML = `
-                    <div class="mt-4 p-4 rounded-lg flex items-start gap-3 fade-in ${isCorrect ? 'bg-emerald-50 text-emerald-800' : 'bg-amber-50 text-amber-800'}">
-                        ${isCorrect ? icons.CheckCircle(20, 'mt-0.5') : icons.AlertCircle(20, 'mt-0.5')}
-                        <div>
-                            <p class="font-bold">${isCorrect ? "¡Correcto!" : "Repasemos..."}</p>
-                            <p class="text-sm mt-1">${question.explanation}</p>
-                        </div>
-                    </div>`;
-
-                 // Update progress bar and counter
-                document.getElementById('answered-counter').textContent = `${answeredCount} de ${module.quiz.length} completadas`;
-                document.getElementById('module-progress-bar').style.width = `${newProgress}%`;
-
-                if (answeredCount === module.quiz.length) {
-                    document.getElementById('quiz-conclusion').innerHTML = `
-                        <div class="mt-8 p-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl text-white text-center shadow-xl fade-in transform transition-all">
-                            <h3 class="text-3xl font-bold mb-2">${score >= 4 ? "¡Excelente Trabajo! 🌟" : "¡Módulo Completado! 👍"}</h3>
-                            <p class="text-indigo-100 text-lg mb-6">
-                                Obtuviste <span class="font-bold text-white bg-white/20 px-2 py-0.5 rounded">${score} / ${module.quiz.length}</span> respuestas correctas.
-                            </p>
-                            <button id="back-to-menu" class="bg-white text-indigo-700 px-8 py-3 rounded-xl font-bold hover:bg-indigo-50 transition-colors shadow-md">
-                                Volver al Menú Principal
-                            </button>
-                        </div>`;
-                         document.getElementById('back-to-menu').addEventListener('click', goHome);
+                if (newCount === module.quiz.length) {
+                    onComplete(module.id, 100); 
+                } else {
+                    onComplete(module.id, Math.round((newCount / module.quiz.length) * 100));
                 }
-            }
-            
-            return `
-                <div class="fade-in max-w-4xl mx-auto pb-12">
-                    <button id="back-to-home" class="flex items-center text-slate-500 hover:text-indigo-600 mb-6 font-medium transition-colors">
-                        ${icons.Home(18, 'mr-2')} Volver al Tablero
+            };
+
+            return (
+                <div className="fade-in max-w-4xl mx-auto pb-12">
+                    <button onClick={onBack} className="flex items-center text-slate-500 hover:text-indigo-600 mb-6 font-medium transition-colors group">
+                        <div className="p-1 rounded-full bg-slate-100 group-hover:bg-indigo-100 mr-2 transition-colors">
+                            <Home size={16} />
+                        </div>
+                        Volver al Tablero
                     </button>
-                     <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200 mb-8">
-                        <div class="flex items-center gap-4 mb-6">
-                            <div class="p-4 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-2xl shadow-lg">
-                                ${module.icon.replace('width="24"', 'width="40"').replace('height="24"', 'height="40"')}
+
+                    <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200 mb-8 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-8 opacity-5 transform translate-x-1/4 -translate-y-1/4 pointer-events-none">
+                            {React.cloneElement(module.icon, { size: 200 })}
+                        </div>
+
+                        <div className="flex items-center gap-4 mb-6 relative z-10">
+                            <div className="p-4 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-2xl shadow-lg ring-4 ring-indigo-50">
+                                {React.cloneElement(module.icon, { size: 40 })}
                             </div>
                             <div>
-                                <h1 class="text-3xl font-bold text-slate-800">${module.title}</h1>
-                                <p class="text-slate-500 mt-1">${module.description}</p>
+                                <h1 className="text-3xl font-bold text-slate-800">{module.title}</h1>
+                                <p className="text-slate-500 mt-1 text-lg">{module.description}</p>
                             </div>
                         </div>
-                        <div class="grid md:grid-cols-2 gap-8">
+
+                        <div className="grid md:grid-cols-2 gap-8 relative z-10">
                             <div>
-                                <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center">${icons.BookOpen(20, 'mr-2 text-indigo-500')} Repaso Teórico</h2>
-                                <div class="space-y-6">
-                                    ${module.theory.map(item => `
-                                        <div class="group">
-                                            <h3 class="font-semibold text-slate-700 mb-2 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-indigo-400"></div>${item.title}</h3>
-                                            <p class="text-slate-600 text-sm mb-3 leading-relaxed pl-4">${item.content}</p>
-                                            <div class="bg-slate-900 rounded-lg p-4 overflow-hidden shadow-md relative ml-4">
-                                                <div class="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
-                                                <pre class="text-xs text-indigo-100 font-mono overflow-x-auto"><code>${item.code}</code></pre>
+                                <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
+                                    <BookOpen size={20} className="mr-2 text-indigo-500" /> Repaso Teórico
+                                </h2>
+                                <div className="space-y-6">
+                                    {module.theory.map((item, idx) => (
+                                        <div key={idx} className="group">
+                                            <h3 className="font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-indigo-400"></div>
+                                                {item.title}
+                                            </h3>
+                                            <p className="text-slate-600 text-sm mb-3 leading-relaxed pl-4 border-l-2 border-slate-100 ml-0.5">{item.content}</p>
+                                            <div className="bg-slate-900 rounded-lg p-4 overflow-hidden shadow-md relative ml-4 group-hover:shadow-lg transition-shadow">
+                                                <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+                                                <pre className="text-xs text-indigo-100 font-mono overflow-x-auto custom-scrollbar">
+                                                    <code>{item.code}</code>
+                                                </pre>
                                             </div>
                                         </div>
-                                    `).join('')}
+                                    ))}
                                 </div>
                             </div>
-                             <div class="bg-slate-50 rounded-xl p-6 border border-slate-200 h-fit sticky top-24">
-                                <h2 class="text-lg font-bold text-slate-800 mb-2 flex items-center">${icons.Code(20, 'mr-2 text-emerald-600')} Conexión Real</h2>
-                                <p class="text-sm text-slate-600 mb-4">Lo aplicaste en: <br/><span class="font-semibold text-emerald-700 block mt-1 p-2 bg-emerald-100 rounded border border-emerald-200">${module.projectLink}</span></p>
-                                <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800 flex gap-3">
-                                    ${icons.AlertCircle(24, 'shrink-0 mt-0.5 text-amber-600')}
-                                    <p>¡Ojo! Lee bien las preguntas, algunas tienen "trampas" comunes de sintaxis.</p>
+
+                            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 h-fit sticky top-24">
+                                <h2 className="text-lg font-bold text-slate-800 mb-2 flex items-center">
+                                    <Code size={20} className="mr-2 text-emerald-600" /> Conexión con Tus Proyectos
+                                </h2>
+                                <p className="text-sm text-slate-600 mb-4">
+                                    Este contenido sale directamente de: <br/>
+                                    <span className="font-semibold text-emerald-700 block mt-1 p-2 bg-emerald-100 rounded border border-emerald-200 shadow-sm">
+                                        <FileText size={14} className="inline mr-1" />
+                                        {module.projectLink}
+                                    </span>
+                                </p>
+                                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800 flex gap-3">
+                                    <AlertCircle size={24} className="shrink-0 mt-0.5 text-amber-600" />
+                                    <p>¡Atención! Las preguntas pondrán a prueba si realmente entiendes el código que escribiste.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                     <div>
-                        <div class="flex items-center justify-between mb-6 bg-slate-100 p-4 rounded-xl">
-                            <h2 class="text-xl font-bold text-slate-800">Práctica Interactiva</h2>
-                            <div class="flex items-center gap-3">
-                                <div id="answered-counter" class="text-sm font-medium text-slate-500">0 de ${module.quiz.length} completadas</div>
-                                <div class="w-32 h-2 bg-slate-200 rounded-full overflow-hidden">
-                                    <div id="module-progress-bar" class="h-full bg-indigo-500 progress-bar" style="width: 0%"></div>
+
+                    <div>
+                        <div className="flex items-center justify-between mb-6 bg-slate-100 p-4 rounded-xl border border-slate-200">
+                            <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                <PenTool size={20} className="text-slate-500" />
+                                Desafío Práctico
+                            </h2>
+                            <div className="flex items-center gap-3">
+                                <div className="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">
+                                    {answeredCount} / {module.quiz.length}
+                                </div>
+                                <div className="w-32 h-2.5 bg-slate-200 rounded-full overflow-hidden border border-slate-300">
+                                    <div 
+                                        className="h-full bg-indigo-500 progress-bar shadow-[0_0_10px_rgba(99,102,241,0.5)]" 
+                                        style={{ width: `${(answeredCount / module.quiz.length) * 100}%` }}
+                                    ></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="space-y-6">${quizHTML}</div>
-                        <div id="quiz-conclusion"></div>
+
+                        <div className="space-y-6">
+                            {module.quiz.map((q, idx) => (
+                                <QuizCard key={idx} question={q} index={idx} onAnswer={handleAnswer} />
+                            ))}
+                        </div>
+
+                        {answeredCount === module.quiz.length && (
+                            <div className="mt-8 p-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl text-white text-center shadow-xl fade-in transform transition-all ring-4 ring-indigo-100">
+                                <div className="mb-4 inline-block p-4 bg-white/20 rounded-full backdrop-blur-sm">
+                                     {score >= 4 ? <CheckCircle size={40} /> : <BookOpen size={40} />}
+                                </div>
+                                <h3 className="text-3xl font-bold mb-2">
+                                    {score >= 4 ? "¡Excelente Trabajo! 🌟" : "¡Módulo Completado! 👍"}
+                                </h3>
+                                <p className="text-indigo-100 text-lg mb-6 max-w-md mx-auto">
+                                    Has acertado <span className="font-bold text-white bg-white/20 px-2 py-0.5 rounded">{score} de {module.quiz.length}</span> preguntas. 
+                                    {score < 4 ? " Te recomiendo repasar la teoría un poco más." : " Estás listo para el siguiente tema."}
+                                </p>
+                                <button onClick={onBack} className="bg-white text-indigo-700 px-8 py-3 rounded-xl font-bold hover:bg-indigo-50 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                                    Volver al Menú Principal
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
-            `;
-        }
+            );
+        };
 
-        // Initial Render
-        render();
+        const App = () => {
+            const [currentModule, setCurrentModule] = useState(null);
+            const [progressMap, setProgressMap] = useState({
+                'fundamentos': 0,
+                'control': 0,
+                'datos': 0,
+                'funciones': 0,
+                'archivos': 0
+            });
 
+            const updateProgress = (moduleId, percent) => {
+                setProgressMap(prev => ({
+                    ...prev,
+                    [moduleId]: Math.max(prev[moduleId], percent)
+                }));
+            };
+
+            const totalModules = modulesData.length;
+            const totalProgress = Object.values(progressMap).reduce((a, b) => a + b, 0) / totalModules;
+
+            return (
+                <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
+                    <header className="glass-panel border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+                        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-indigo-600 p-2 rounded-lg text-white shadow-md transform hover:scale-105 transition-transform">
+                                    <Terminal size={20} />
+                                </div>
+                                <div>
+                                    <h1 className="font-bold text-slate-800 text-lg leading-tight">Recuperación: Algoritmos</h1>
+                                    <p className="text-xs text-slate-500 font-medium hidden md:block">Escuela Secundaria - 5to Año</p>
+                                </div>
+                            </div>
+                            
+                            <div className="flex flex-col items-end w-1/3 md:w-1/4">
+                                <div className="flex justify-between w-full text-xs font-bold text-slate-600 mb-1">
+                                    <span>Avance Global</span>
+                                    <span>{Math.round(totalProgress)}%</span>
+                                </div>
+                                <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                                    <div 
+                                        className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 progress-bar shadow-[0_0_10px_rgba(52,211,153,0.4)]" 
+                                        style={{ width: `${totalProgress}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    <main className="max-w-5xl mx-auto px-4 py-8">
+                        {!currentModule ? (
+                            <div className="fade-in">
+                                <div className="text-center mb-10 py-8">
+                                    <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
+                                        Panel de Estudio <span className="text-indigo-600">Inteligente</span>
+                                    </h2>
+                                    <p className="text-slate-600 max-w-2xl mx-auto text-lg leading-relaxed">
+                                        Hemos transformado tus proyectos de clase (Juegos, Inventario y Agenda) en una guía interactiva. 
+                                        <span className="block mt-2 font-medium text-slate-800">Completa los 5 módulos para asegurar tu aprobado.</span>
+                                    </p>
+                                </div>
+
+                                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {modulesData.map((mod) => {
+                                        const percent = progressMap[mod.id] || 0;
+                                        const isComplete = percent === 100;
+
+                                        return (
+                                            <button 
+                                                key={mod.id} 
+                                                onClick={() => setCurrentModule(mod)}
+                                                className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-indigo-300 hover:-translate-y-1 transition-all duration-300 text-left group relative overflow-hidden"
+                                            >
+                                                <div className="absolute top-0 left-0 w-full h-1.5 bg-slate-100">
+                                                    <div 
+                                                        className={`h-full ${isComplete ? 'bg-emerald-500' : 'bg-indigo-500'} progress-bar`} 
+                                                        style={{ width: `${percent}%` }}
+                                                    ></div>
+                                                </div>
+
+                                                <div className="flex items-start justify-between mb-4 mt-2">
+                                                    <div className={`p-3 rounded-xl transition-all duration-300 ${isComplete ? 'bg-emerald-100 text-emerald-600' : 'bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white shadow-sm'}`}>
+                                                        {mod.icon}
+                                                    </div>
+                                                    {isComplete ? (
+                                                        <div className="bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-sm border border-emerald-200">
+                                                            <CheckCircle size={12} /> Completado
+                                                        </div>
+                                                    ) : (
+                                                        <div className="text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+                                                            {percent}%
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                
+                                                <h3 className="text-lg font-bold text-slate-800 mb-2 group-hover:text-indigo-600 transition-colors">{mod.title}</h3>
+                                                <p className="text-slate-500 text-sm leading-relaxed mb-4 min-h-[40px]">{mod.description}</p>
+                                                
+                                                <div className="flex items-center text-sm font-bold text-indigo-600 group-hover:translate-x-2 transition-transform">
+                                                    {percent > 0 ? 'Continuar Repaso' : 'Comenzar'} <ChevronRight size={16} className="ml-1" />
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                
+                                <div className="mt-16 bg-white border border-indigo-100 rounded-3xl p-8 shadow-lg flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full blur-2xl opacity-60"></div>
+                                    
+                                    <div className="bg-indigo-50 p-6 rounded-full text-indigo-600 relative z-10 ring-8 ring-indigo-50/50">
+                                        <Play size={40} fill="currentColor" />
+                                    </div>
+                                    <div className="text-center md:text-left relative z-10 flex-1">
+                                        <h3 className="font-bold text-slate-800 text-2xl mb-2">Tu Camino al Aprobado</h3>
+                                        <p className="text-slate-600 text-lg leading-relaxed">
+                                            Esta guía cubre el 100% de los temas. Si logras completar los módulos, 
+                                            <span className="font-bold text-indigo-600"> no tendrás problemas</span> con el cuestionario final ni con los ejercicios de código.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <ModuleView 
+                                module={currentModule} 
+                                onBack={() => setCurrentModule(null)} 
+                                onComplete={updateProgress}
+                            />
+                        )}
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
-
 </body>
 </html>
