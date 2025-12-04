@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía de Recuperación: Algoritmos</title>
+    <title>Guía de Nivelación: Algoritmos</title>
     
     <!-- Carga de Librerías (React, ReactDOM, Babel, Tailwind) -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
@@ -23,7 +23,7 @@
         .progress-bar { transition: width 0.5s ease-out; }
         .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
         
-        /* Scrollbar personalizada para bloques de código */
+        /* Scrollbar personalizada */
         .custom-scrollbar::-webkit-scrollbar { height: 8px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 4px; }
@@ -35,7 +35,7 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // --- ICONOS (Definidos manualmente para no depender de librerías externas complejas) ---
+        // --- ICONOS ---
         const Icon = ({ children, size = 24, className = "" }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
                 {children}
@@ -62,269 +62,349 @@
         const modulesData = [
             {
                 id: 'fundamentos',
-                title: 'Módulo 1: Fundamentos y Strings',
+                title: 'Módulo 1: Fundamentos y Variables',
                 icon: <Terminal size={24} />,
-                description: 'Variables, Tipos, Input y Manipulación de Texto.',
+                description: 'Variables, Tipos de datos, Operadores e Ingreso por teclado.',
                 theory: [
                     {
-                        title: 'Variables y Tipos',
-                        content: 'Python detecta automáticamente si el dato es texto (str), entero (int) o decimal (float).',
-                        code: `precio = 19.99  # float\nedad = 17       # int`
+                        title: 'Tipos de Datos y Variables',
+                        content: 'Python infiere el tipo de dato. Usamos int (enteros), float (decimales) y str (texto). Las variables deben tener nombres descriptivos en minúsculas (snake_case).',
+                        code: `edad = 17          # int\naltura = 1.75      # float\nnombre = "Ana"     # str`
                     },
                     {
-                        title: 'Validación de Texto (.lower)',
-                        content: 'Para comparar textos sin importar mayúsculas, usamos métodos como .lower(). Fundamental para inputs de usuario.',
-                        code: `respuesta = input("Animal: ").lower()\nif respuesta == "zorro": ...`
+                        title: 'Entrada y Conversión',
+                        content: 'input() siempre devuelve texto. Para hacer cálculos numéricos, debemos convertir (castear) el valor usando int() o float().',
+                        code: `texto = input("Edad: ") \nnumero = int(texto)`
+                    },
+                    {
+                        title: 'Manipulación de Strings',
+                        content: 'Podemos unir textos (+) o usar f-strings para insertar valores. Métodos como .lower() ayudan a normalizar el texto.',
+                        code: `print(f"Hola {nombre}")\nresp = opcion.lower()`
                     }
                 ],
-                projectLink: 'Usado en "AdivinaSitios" para validar respuestas (input().lower()).',
+                projectLink: 'Conceptos esenciales para cualquier programa interactivo.',
                 quiz: [
                     {
-                        question: "En el juego Adivina Sitios, ¿por qué usamos `.lower()` en el input?",
-                        code: 'intento = input("¿Qué animal es?").lower()',
-                        options: ["Para convertir a mayúsculas", "Para ignorar mayúsculas/minúsculas al comparar", "Para borrar espacios", "Para traducir"],
+                        question: "¿Qué tipo de dato devuelve por defecto la función `input()`?",
+                        options: ["Entero (int)", "Texto (str)", "Decimal (float)", "Booleano (bool)"],
                         correct: 1,
-                        explanation: "Permite que si el usuario escribe 'Zorro', 'ZORRO' o 'zorro', el programa lo entienda siempre como minúscula y acierte."
+                        explanation: "Sin importar qué escriba el usuario, `input()` siempre captura la entrada como una cadena de texto."
                     },
                     {
-                        question: "Para pedir la cantidad de jugadores (número), ¿qué función es obligatoria?",
-                        code: 'jugadores = ____(input("Cantidad: "))',
-                        options: ["str", "int", "print", "float"],
+                        question: "Si `a = '10'` y `b = '20'`, ¿qué imprime `print(a + b)`?",
+                        options: ["30", "1020", "Error", "10 20"],
                         correct: 1,
-                        explanation: "input() devuelve siempre texto (str). Necesitamos int() para convertirlo a número y poder hacer cálculos."
+                        explanation: "Al ser cadenas de texto, el operador `+` las concatena (une), no realiza una suma matemática."
                     },
                     {
-                        question: "¿Cuál es el resultado de concatenar estas cadenas?",
-                        code: 'print("Juego: " + "Cartas")',
-                        options: ["Juego: Cartas", "Juego:Cartas", "Error", "JuegoCartas"],
-                        correct: 0,
-                        explanation: "El operador + une las cadenas tal cual están. Como el primer string tiene un espacio al final ('Juego: '), este se conserva."
-                    },
-                    {
-                        question: "¿Cómo se nombra correctamente una variable en Python (convención)?",
-                        options: ["NombreJuego", "nombre juego", "nombre_juego", "1nombre"],
+                        question: "¿Cuál es la forma correcta de convertir un texto ingresado a número entero?",
+                        code: 'valor = ____(input("Ingrese cantidad: "))',
+                        options: ["str", "integer", "int", "float"],
                         correct: 2,
-                        explanation: "La convención 'snake_case' (minúsculas separadas por guion bajo) es la estándar en Python."
+                        explanation: "La función `int()` toma un texto numérico y lo transforma en un valor de tipo entero."
                     },
                     {
-                        question: "¿Qué permite hacer el operador `f` antes de las comillas?",
-                        code: 'print(f"Hola {nombre}")',
-                        options: ["Da error", "Formatea el texto insertando variables", "Lo hace flotante", "Nada"],
+                        question: "¿Para qué sirve el método `.lower()` aplicado a un texto?",
+                        code: 'respuesta = entrada.lower()',
+                        options: ["Convierte todo a mayúsculas", "Convierte todo a minúsculas", "Elimina espacios", "Borra el texto"],
                         correct: 1,
-                        explanation: "Las f-strings (Formatted strings) permiten incrustar variables directamente dentro del texto usando llaves {}."
+                        explanation: "Es útil para validar respuestas del usuario sin importar si usó mayúsculas o minúsculas."
+                    },
+                    {
+                        question: "¿Cuál de estas variables sigue la convención correcta (snake_case)?",
+                        options: ["NombreUsuario", "nombre usuario", "nombre_usuario", "1nombre"],
+                        correct: 2,
+                        explanation: "En Python, las variables se escriben en minúsculas y las palabras se separan con guiones bajos."
+                    },
+                    {
+                        question: "Si quiero mostrar el valor de una variable dentro de un texto, uso:",
+                        code: 'nombre = "Luis"',
+                        options: ['print("Hola {nombre}")', 'print(f"Hola {nombre}")', 'print("Hola" + {nombre})', 'print(Hola, nombre)'],
+                        correct: 1,
+                        explanation: "Las `f-strings` (indicadas con una `f` antes de las comillas) permiten inyectar variables entre llaves `{}`."
+                    },
+                    {
+                        question: "¿Qué operador se usa para la asignación de valores?",
+                        options: ["==", "=", ":", "->"],
+                        correct: 1,
+                        explanation: "El signo `=` asigna un valor a una variable. El `==` se usa para comparar."
                     }
                 ]
             },
             {
                 id: 'control',
-                title: 'Módulo 2: Control y Bucles',
+                title: 'Módulo 2: Estructuras de Control',
                 icon: <RefreshCw size={24} />,
-                description: 'Menús interactivos (While), Enumeración y Condicionales.',
+                description: 'Condicionales (if) y Bucles (while/for).',
                 theory: [
                     {
-                        title: 'Bucle While (Menús)',
-                        content: 'Mantiene el programa corriendo infinitamente hasta que una condición (break) lo detenga.',
-                        code: `while True:\n    opcion = int(input("..."))\n    if opcion == 6:\n        break`
+                        title: 'Condicionales',
+                        content: 'Permiten tomar decisiones. Usamos operadores de comparación (==, !=, >, <) y lógica (and, or).',
+                        code: `if opcion == 1:\n    print("Elegiste 1")\nelse:\n    print("Otra opción")`
                     },
                     {
-                        title: 'Función Enumerate',
-                        content: 'Recorre una lista entregando dos valores a la vez: el índice (posición) y el dato.',
-                        code: `for i, juego in enumerate(lista):\n    print(f"{i+1}. {juego}")`
+                        title: 'Bucles Indefinidos (While)',
+                        content: 'Se ejecutan mientras una condición sea verdadera. `while True` es común para menús, usando `break` para salir.',
+                        code: `while True:\n    if salir:\n        break`
+                    },
+                    {
+                        title: 'Enumeración',
+                        content: '`enumerate()` es ideal para recorrer listas obteniendo al mismo tiempo la posición y el valor.',
+                        code: `for i, item in enumerate(lista):\n    print(i, item)`
                     }
                 ],
-                projectLink: 'Usado en "AppConsolaJgoMesa" para numerar visualmente la lista de juegos.',
+                projectLink: 'Lógica fundamental para menús y validaciones.',
                 quiz: [
                     {
-                        question: "En tu menú de Juegos, ¿qué hace la instrucción `break` cuando eliges Salir?",
-                        code: `if opcion == 6:\n    print("Adiós")\n    break`,
-                        options: ["Reinicia el menú", "Pausa el programa", "Rompe el bucle while y termina", "Borra la pantalla"],
+                        question: "¿Qué operador se usa para preguntar si dos valores son IGUALES?",
+                        options: ["=", "==", "!=", "<>"],
+                        correct: 1,
+                        explanation: "`=` es asignación, `==` es comparación de igualdad."
+                    },
+                    {
+                        question: "En un menú con `while True`, ¿qué instrucción detiene el bucle?",
+                        options: ["stop", "continue", "break", "exit loop"],
                         correct: 2,
-                        explanation: "break corta inmediatamente el ciclo del while True, permitiendo que el flujo del programa salga del menú."
+                        explanation: "`break` interrumpe inmediatamente el flujo del bucle y salta a la primera línea fuera de él."
                     },
                     {
-                        question: "¿Qué devuelve `enumerate(biblioteca)` en cada iteración?",
-                        options: ["Ordena alfabéticamente", "El índice (posición) y el elemento", "Cuenta el total", "Solo el elemento"],
+                        question: "¿Qué imprime el siguiente código?",
+                        code: `if 5 > 10:\n    print("A")\nelse:\n    print("B")`,
+                        options: ["A", "B", "A y B", "Nada"],
                         correct: 1,
-                        explanation: "Devuelve tuplas (índice, valor), lo que nos permite poner números (1., 2., 3.) automáticamente al listar."
+                        explanation: "La condición `5 > 10` es Falsa, por lo tanto se ejecuta el bloque `else`."
                     },
                     {
-                        question: "¿Qué error tiene este condicional?",
-                        code: `if opcion = 1:`,
-                        options: ["Funciona bien", "Error de sintaxis (debe ser ==)", "Faltan paréntesis", "Sobra espacio"],
+                        question: "¿Qué función permite obtener índice y valor al recorrer una lista?",
+                        code: `for i, x in ____(lista):`,
+                        options: ["range", "enumerate", "list", "count"],
                         correct: 1,
-                        explanation: "Un solo `=` es ASIGNACIÓN. Para COMPARAR en un if, siempre debemos usar doble igual `==`."
+                        explanation: "`enumerate` devuelve pares (índice, elemento), útil para mostrar listas numeradas."
                     },
                     {
-                        question: "En Adivina Sitios, usamos `intentos += 1`. ¿Qué significa?",
-                        options: ["Suma 1 a la variable intentos", "Resetea a 1", "Compara con 1", "Resta 1"],
-                        correct: 0,
-                        explanation: "`+= 1` es el atajo para escribir `intentos = intentos + 1`. Incrementa el contador."
+                        question: "Si quiero que un bucle salte a la siguiente iteración sin terminar el ciclo, uso:",
+                        options: ["break", "pass", "return", "continue"],
+                        correct: 3,
+                        explanation: "`continue` omite el resto del código dentro del bucle para esa vuelta y pasa a la siguiente condición."
                     },
                     {
-                        question: "Para filtrar juegos y eliminar uno, usaron esta estructura eficiente:",
-                        code: `[juego for juego in biblio if ... ]`,
-                        options: ["Comprensión de listas", "Bucle While", "Diccionario", "Tupla"],
-                        correct: 0,
-                        explanation: "Es una 'List Comprehension'. Crea una lista nueva que incluye solo los juegos que NO queremos borrar."
+                        question: "¿Cuántas veces se ejecuta `for i in range(5)`?",
+                        options: ["4 veces (0 a 3)", "5 veces (1 a 5)", "5 veces (0 a 4)", "Infinitas"],
+                        correct: 2,
+                        explanation: "`range(5)` genera la secuencia 0, 1, 2, 3, 4."
+                    },
+                    {
+                        question: "¿Qué sucede si no actualizo la condición en un `while` normal (no True)?",
+                        options: ["Da error de sintaxis", "Se crea un bucle infinito", "Se detiene solo", "Python lo corrige"],
+                        correct: 1,
+                        explanation: "Si la condición nunca se vuelve Falsa, el bucle nunca termina (Loop Infinito)."
                     }
                 ]
             },
             {
                 id: 'datos',
-                title: 'Módulo 3: Estructuras Complejas',
+                title: 'Módulo 3: Listas y Diccionarios',
                 icon: <Layers size={24} />,
-                description: 'Listas de Diccionarios y manejo de claves.',
+                description: 'Organización de datos en memoria.',
                 theory: [
                     {
-                        title: 'Listas de Diccionarios',
-                        content: 'La estructura principal de sus proyectos. Una lista donde CADA ítem es un diccionario.',
-                        code: `juegos = [\n  {"nombre": "TEG", "jug": 6},\n  {"nombre": "Ludo", "jug": 4}\n]`
+                        title: 'Listas',
+                        content: 'Colecciones ordenadas. Se pueden modificar. `append` agrega al final. Se accede por índice empezando en 0.',
+                        code: `items = ["A", "B"]\nitems.append("C")\nprint(items[0]) # "A"`
                     },
                     {
-                        title: 'Acceso a Datos Anidados',
-                        content: 'Para llegar al dato interno, usamos índice de lista [] y luego clave de diccionario [].',
-                        code: `print(juegos[0]["nombre"]) # Imprime "TEG"`
+                        title: 'Diccionarios',
+                        content: 'Estructuras Clave-Valor. Ideales para datos etiquetados. Se accede por la clave.',
+                        code: `datos = {"nombre": "Leo", "edad": 20}\nprint(datos["nombre"])`
+                    },
+                    {
+                        title: 'Listas de Diccionarios',
+                        content: 'Patrón común para bases de datos en memoria: una lista donde cada fila es un diccionario.',
+                        code: `usuarios = [{"id":1}, {"id":2}]`
                     }
                 ],
-                projectLink: 'Base central de "AppConsolaJgoMesa" (variable biblioteca_juegos).',
+                projectLink: 'Estructuras base para gestionar colecciones de información.',
                 quiz: [
                     {
-                        question: "En `biblioteca_juegos`, ¿de qué tipo es cada elemento guardado en la lista?",
-                        code: `biblioteca_juegos.append(nuevo_juego)`,
-                        options: ["String", "Entero", "Diccionario", "Lista"],
+                        question: "¿Cómo agrego un elemento nuevo al final de una lista?",
+                        options: ["lista.add()", "lista.push()", "lista.append()", "lista.insert()"],
                         correct: 2,
-                        explanation: "La variable `nuevo_juego` es un diccionario `{...}` que luego se agrega a la lista."
+                        explanation: "El método `.append()` añade el elemento al final de la lista existente."
                     },
                     {
-                        question: "¿Cómo accedo a la cantidad de jugadores del PRIMER juego de la lista?",
-                        code: `biblio = [{"n": "Uno", "j": 4}, ...]`,
-                        options: ["biblio[0]", "biblio['j']", "biblio[0]['j']", "biblio.get('j')"],
+                        question: "En el diccionario `p = {'color': 'rojo'}`, ¿cómo accedo al valor 'rojo'?",
+                        options: ["p[0]", "p['rojo']", "p['color']", "p.color"],
                         correct: 2,
-                        explanation: "Primero entras a la posición 0 de la lista (`biblio[0]`) y a ese objeto le pides la clave `['j']`."
+                        explanation: "Los diccionarios usan sus claves (keys) para acceder a los valores asociados."
                     },
                     {
-                        question: "En Adivina Sitios, `list(animales.keys())` nos da:",
-                        options: ["Las descripciones", "Los nombres de los animales", "Todo el diccionario", "Un número"],
+                        question: "Tengo una lista de alumnos donde cada alumno es un diccionario. ¿Cómo accedo al nombre del primer alumno?",
+                        code: `alumnos = [{"nom": "Ana"}, {"nom": "Lu"}]`,
+                        options: ["alumnos['nom']", "alumnos[0]['nom']", "alumnos['nom'][0]", "alumnos.get('nom')"],
                         correct: 1,
-                        explanation: "Las 'keys' (claves) son los nombres (ej: 'Zorro'). Los valores son las descripciones."
+                        explanation: "Primero accedo al índice 0 de la lista (`alumnos[0]`) y luego a la clave del diccionario (`['nom']`)."
                     },
                     {
-                        question: "¿Qué pasa si intento acceder a `juego['precio']` y esa clave no existe?",
-                        options: ["Devuelve 0", "Crea la clave", "Da KeyError (Error)", "Devuelve False"],
-                        correct: 2,
-                        explanation: "Python arroja un error `KeyError`. Por eso es importante saber qué claves tiene nuestro diccionario."
-                    },
-                    {
-                        question: "Para verificar si la lista NO tiene elementos, usamos:",
-                        code: `if not biblioteca_juegos:`,
-                        options: ["Verdadero si tiene datos", "Verdadero si está vacía", "Da error", "Borra la lista"],
+                        question: "¿Qué devuelve `len(lista)`?",
+                        options: ["El último elemento", "La cantidad de elementos", "La suma de elementos", "El peso en memoria"],
                         correct: 1,
-                        explanation: "En Python, una lista vacía `[]` se evalúa como `False`. Por tanto, `not False` es `True`."
+                        explanation: "`len()` es una función built-in que devuelve la longitud (cantidad de ítems) de una colección."
+                    },
+                    {
+                        question: "¿Cómo verifico si una lista está vacía en un if?",
+                        code: `lista = []`,
+                        options: ["if lista == 0:", "if not lista:", "if lista.empty():", "if lista is None:"],
+                        correct: 1,
+                        explanation: "En Python, una lista vacía se evalúa como `False`. Por tanto, `not lista` será `True`."
+                    },
+                    {
+                        question: "La técnica para crear una nueva lista filtrando elementos de otra se llama:",
+                        code: `[x for x in lista if x > 0]`,
+                        options: ["List Filtering", "List Comprehension", "List Loop", "List Reduction"],
+                        correct: 1,
+                        explanation: "Las comprensiones de lista son una forma concisa y 'pythonica' de crear listas."
+                    },
+                    {
+                        question: "¿Qué pasa si intento acceder a una clave que no existe en un diccionario?",
+                        options: ["Devuelve None", "Crea la clave", "Da error (KeyError)", "Devuelve 0"],
+                        correct: 2,
+                        explanation: "Acceder directamente con corchetes `[]` a una clave inexistente provoca un error que detiene el programa."
                     }
                 ]
             },
             {
                 id: 'funciones',
-                title: 'Módulo 4: Funciones y Módulos',
+                title: 'Módulo 4: Funciones',
                 icon: <Box size={24} />,
-                description: 'Organización de código, parámetros e importaciones.',
+                description: 'Modularización y reutilización de código.',
                 theory: [
                     {
-                        title: 'Módulos (Import)',
-                        content: 'Permite usar código de otros archivos o librerías estándar.',
-                        code: `import random\nimport funciones\n\nrandom.choice(lista)`
+                        title: 'Definición y Llamada',
+                        content: '`def` define el bloque de código. La función solo se ejecuta cuando se la llama con paréntesis `()`',
+                        code: `def saludar():\n    print("Hola")\n\nsaludar() # Llamada`
                     },
                     {
-                        title: 'Llamada a Funciones',
-                        content: '¡Cuidado! Nombrar la función no la ejecuta. Necesitas los paréntesis ().',
-                        code: `funciones.menu()  # Correcto\nfunciones.menu    # No hace nada`
+                        title: 'Parámetros',
+                        content: 'Variables que la función espera recibir para trabajar. Hacen que la función sea flexible.',
+                        code: `def sumar(a, b): ...`
+                    },
+                    {
+                        title: 'Módulos',
+                        content: '`import` permite traer funciones de otros archivos o librerías estándar (como random).',
+                        code: `import random\nx = random.randint(1, 10)`
                     }
                 ],
-                projectLink: 'Usado en "AdivinaSitios" (random) y "GestorInventario" (funciones propias).',
+                projectLink: 'Clave para ordenar y no repetir código.',
                 quiz: [
                     {
-                        question: "¿Para qué sirve `import random` en el juego de Adivinanzas?",
-                        options: ["Para gráficos", "Para elegir un animal al azar", "Para limpiar pantalla", "Para matemáticas"],
-                        correct: 1,
-                        explanation: "La librería `random` tiene herramientas para generar aleatoriedad, como elegir un ítem sorpresa."
-                    },
-                    {
-                        question: "En el Gestor de Inventario, ¿dónde busca Python `funciones.menu()`?",
-                        options: ["En el mismo archivo", "En un archivo llamado 'funciones.py'", "En internet", "No existe"],
-                        correct: 1,
-                        explanation: "Al hacer `import funciones`, Python busca el archivo `funciones.py` en la misma carpeta."
-                    },
-                    {
-                        question: "¿Qué es 'animal_secreto' en la definición de esta función?",
-                        code: `def verificar(intento, animal_secreto):`,
-                        options: ["Una variable global", "Un parámetro (argumento)", "El nombre de la función", "Un módulo"],
-                        correct: 1,
-                        explanation: "Es un parámetro: una variable 'hueca' que recibirá un valor cuando llamemos a la función."
-                    },
-                    {
-                        question: "¿Qué hace `random.choice(lista)`?",
-                        options: ["Ordena la lista", "Devuelve toda la lista", "Elige un elemento aleatorio", "Elimina un elemento"],
+                        question: "¿Qué palabra clave se usa para definir una función?",
+                        options: ["function", "func", "def", "define"],
                         correct: 2,
-                        explanation: "Es el método específico para seleccionar un elemento al azar de una secuencia."
+                        explanation: "En Python se utiliza `def` seguido del nombre de la función y paréntesis."
                     },
                     {
-                        question: "¡Error común! En el Gestor, ¿qué pasa si escribes `funciones.salir` sin `()`?",
-                        options: ["Se ejecuta igual", "Da error", "No sucede nada", "Se borra"],
+                        question: "Si tengo `def menu():`, ¿cómo ejecuto esa función?",
+                        options: ["menu", "call menu", "menu()", "run menu"],
                         correct: 2,
-                        explanation: "Si olvidas los paréntesis `()`, estás mencionando a la función pero NO la estás ejecutando. El programa seguirá de largo."
+                        explanation: "El nombre de la función debe ir seguido de paréntesis `()` para indicar ejecución."
+                    },
+                    {
+                        question: "¿Qué son los valores dentro de los paréntesis en `def calcular(a, b):`?",
+                        options: ["Resultados", "Parámetros", "Librerías", "Variables globales"],
+                        correct: 1,
+                        explanation: "Son parámetros: variables locales que recibirán los datos enviados al llamar a la función."
+                    },
+                    {
+                        question: "Para usar funciones matemáticas avanzadas o aleatoriedad, debo usar:",
+                        options: ["include", "using", "import", "require"],
+                        correct: 2,
+                        explanation: "`import` carga módulos externos o de la librería estándar (ej: `import random`)."
+                    },
+                    {
+                        question: "Para elegir un elemento al azar de una lista, uso:",
+                        options: ["random.choice(lista)", "lista.random()", "random.pick(lista)", "choice(lista)"],
+                        correct: 0,
+                        explanation: "`choice` es una función del módulo `random` que selecciona un elemento aleatorio."
+                    },
+                    {
+                        question: "Si menciono el nombre de una función sin paréntesis `x = saludar`, ¿qué pasa?",
+                        options: ["Se ejecuta la función", "Da error", "Asigno la función a la variable x, pero no se ejecuta", "Se borra la función"],
+                        correct: 2,
+                        explanation: "Estás haciendo referencia al objeto función. Para ejecutarla, los paréntesis son obligatorios."
+                    },
+                    {
+                        question: "¿Qué hace la instrucción `return`?",
+                        options: ["Imprime en pantalla", "Devuelve un valor al código que llamó a la función", "Reinicia la función", "Cierra el programa"],
+                        correct: 1,
+                        explanation: "`return` finaliza la ejecución de la función y entrega un resultado."
                     }
                 ]
             },
             {
                 id: 'archivos',
-                title: 'Módulo 5: Persistencia y CSV',
+                title: 'Módulo 5: Lectura y Escritura de Archivos',
                 icon: <Save size={24} />,
-                description: 'Leer y escribir datos separados por comas.',
+                description: 'Persistencia de datos en disco (TXT/CSV).',
                 theory: [
                     {
-                        title: 'Formato CSV',
-                        content: 'Guardamos datos simples separándolos por comas. Es un estándar de texto plano.',
-                        code: `"Juan, 17"\n"Ana, 18"`
+                        title: 'Apertura y Modos',
+                        content: '`open(ruta, modo)` abre el archivo. Modos: "r" (leer), "w" (escribir/borrar), "a" (agregar al final).',
+                        code: `f = open("datos.txt", "w")`
                     },
                     {
-                        title: 'Parseo (Lectura)',
-                        content: 'Al leer, limpiamos el salto de línea (strip) y separamos por la coma (split).',
-                        code: `datos = linea.strip().split(",")\nnombre = datos[0]`
+                        title: 'Procesamiento de Texto',
+                        content: 'Al leer, recibimos texto crudo. `strip()` quita saltos de línea y `split(",")` separa datos (CSV).',
+                        code: `datos = linea.strip().split(",")`
+                    },
+                    {
+                        title: 'Escritura',
+                        content: '`write()` espera un string. Es necesario agregar `\\n` manualmente para saltar de línea.',
+                        code: `f.write(f"{dato}\\n")`
                     }
                 ],
-                projectLink: 'Implementado manualmente en "AppLecturaEscritura.py" (Agenda).',
+                projectLink: 'Esencial para guardar información entre ejecuciones.',
                 quiz: [
                     {
-                        question: "En la Agenda, usamos `.split(',')`. ¿Qué resultado obtenemos?",
-                        code: `"Juan,17".split(",")`,
-                        options: ["Borra las comas", "Una lista ['Juan', '17']", "Da error", "Un texto junto"],
-                        correct: 1,
-                        explanation: "Divide la cadena de texto en pedazos cada vez que encuentra una coma y los guarda en una lista."
-                    },
-                    {
-                        question: "¿Por qué usamos `.strip()` antes del split?",
-                        options: ["Para borrar el salto de línea (enter) invisible", "Para borrar el archivo", "Para separar nombres", "No es necesario"],
-                        correct: 0,
-                        explanation: "Las líneas leídas de un archivo traen un caracter `\\n` al final que puede romper nuestro código si no lo quitamos."
-                    },
-                    {
-                        question: "Si abro un archivo con `open('datos.txt', 'a')`, ¿qué significa la 'a'?",
-                        options: ["All (Todo)", "Administrator", "Append (Agregar al final)", "Archive"],
+                        question: "Para abrir un archivo y ESCRIBIR borrando lo anterior, uso el modo:",
+                        options: ["'r'", "'a'", "'w'", "'x'"],
                         correct: 2,
-                        explanation: "El modo 'a' permite escribir información nueva al final del archivo sin borrar lo que ya existía."
+                        explanation: "'w' (Write) abre para escritura. Si el archivo existe, lo sobrescribe (borra contenido previo)."
                     },
                     {
-                        question: "Al guardar, ¿por qué sumamos `+ '\\n'` al final del string?",
-                        code: `archivo.write(nombre + ", " + edad + "\\n")`,
-                        options: ["Para cerrar el archivo", "Para crear un salto de línea", "Es un error", "Para decorar"],
-                        correct: 1,
-                        explanation: "Sin el `\\n`, el siguiente dato se escribiría pegado al anterior en la misma línea. Necesitamos el 'Enter'."
+                        question: "Si quiero AGREGAR datos al final de un archivo sin borrar lo que tiene, uso:",
+                        options: ["'w'", "'r'", "'a'", "'append'"],
+                        correct: 2,
+                        explanation: "'a' (Append) permite añadir contenido al final del archivo preservando lo existente."
                     },
                     {
-                        question: "¿Qué estructura usamos en memoria (RAM) para manejar la agenda antes de guardar?",
-                        options: ["Lista", "Diccionario", "Tupla", "String"],
+                        question: "¿Qué método convierte una línea de texto CSV 'Juan,20' en una lista ['Juan', '20']?",
+                        options: ["slice(',')", "split(',')", "divide(',')", "cut(',')"],
                         correct: 1,
-                        explanation: "Usaron `agenda = {}` donde la clave era el nombre y el valor la edad, para acceder rápido a los datos."
+                        explanation: "`split()` divide una cadena en subcadenas basándose en un separador (en este caso, la coma)."
+                    },
+                    {
+                        question: "¿Por qué es importante usar `.close()`?",
+                        options: ["Para borrar el archivo", "Para guardar cambios y liberar memoria", "Para formatear el disco", "No es importante"],
+                        correct: 1,
+                        explanation: "Cerrar el archivo asegura que los datos del buffer se escriban en disco y libera el recurso."
+                    },
+                    {
+                        question: "¿Qué función lee TODAS las líneas de un archivo y las devuelve en una lista?",
+                        options: ["read()", "readlines()", "readline()", "getall()"],
+                        correct: 1,
+                        explanation: "`readlines()` lee el archivo completo y devuelve una lista donde cada elemento es una línea."
+                    },
+                    {
+                        question: "Al leer una línea de un archivo de texto, ¿qué carácter invisible suele venir al final?",
+                        options: ["\\t (tab)", "\\0 (null)", "\\n (salto de línea)", "EOF"],
+                        correct: 2,
+                        explanation: "Las líneas en archivos de texto terminan con un carácter de salto de línea que usualmente debemos limpiar."
+                    },
+                    {
+                        question: "¿Para qué usamos `.strip()` al leer una línea?",
+                        options: ["Para eliminar espacios y saltos de línea de los extremos", "Para separar palabras", "Para convertir a mayúsculas", "Para borrar la línea"],
+                        correct: 0,
+                        explanation: "Limpia la cadena eliminando el `\\n` final y espacios en blanco extra al inicio o fin."
                     }
                 ]
             }
@@ -466,10 +546,10 @@
 
                             <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 h-fit sticky top-24">
                                 <h2 className="text-lg font-bold text-slate-800 mb-2 flex items-center">
-                                    <Code size={20} className="mr-2 text-emerald-600" /> Conexión con Tus Proyectos
+                                    <Code size={20} className="mr-2 text-emerald-600" /> Enfoque Práctico
                                 </h2>
                                 <p className="text-sm text-slate-600 mb-4">
-                                    Este contenido sale directamente de: <br/>
+                                    Aplicación de estos conceptos: <br/>
                                     <span className="font-semibold text-emerald-700 block mt-1 p-2 bg-emerald-100 rounded border border-emerald-200 shadow-sm">
                                         <FileText size={14} className="inline mr-1" />
                                         {module.projectLink}
@@ -477,7 +557,7 @@
                                 </p>
                                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800 flex gap-3">
                                     <AlertCircle size={24} className="shrink-0 mt-0.5 text-amber-600" />
-                                    <p>¡Atención! Las preguntas pondrán a prueba si realmente entiendes el código que escribiste.</p>
+                                    <p>¡Consejo! Las preguntas están diseñadas para detectar errores comunes de sintaxis y lógica.</p>
                                 </div>
                             </div>
                         </div>
@@ -487,7 +567,7 @@
                         <div className="flex items-center justify-between mb-6 bg-slate-100 p-4 rounded-xl border border-slate-200">
                             <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
                                 <PenTool size={20} className="text-slate-500" />
-                                Desafío Práctico
+                                Desafío Práctico ({module.quiz.length} preguntas)
                             </h2>
                             <div className="flex items-center gap-3">
                                 <div className="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">
@@ -511,14 +591,14 @@
                         {answeredCount === module.quiz.length && (
                             <div className="mt-8 p-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl text-white text-center shadow-xl fade-in transform transition-all ring-4 ring-indigo-100">
                                 <div className="mb-4 inline-block p-4 bg-white/20 rounded-full backdrop-blur-sm">
-                                     {score >= 4 ? <CheckCircle size={40} /> : <BookOpen size={40} />}
+                                     {score >= Math.ceil(module.quiz.length * 0.7) ? <CheckCircle size={40} /> : <BookOpen size={40} />}
                                 </div>
                                 <h3 className="text-3xl font-bold mb-2">
-                                    {score >= 4 ? "¡Excelente Trabajo! 🌟" : "¡Módulo Completado! 👍"}
+                                    {score >= Math.ceil(module.quiz.length * 0.7) ? "¡Excelente Trabajo! 🌟" : "¡Módulo Completado! 👍"}
                                 </h3>
                                 <p className="text-indigo-100 text-lg mb-6 max-w-md mx-auto">
                                     Has acertado <span className="font-bold text-white bg-white/20 px-2 py-0.5 rounded">{score} de {module.quiz.length}</span> preguntas. 
-                                    {score < 4 ? " Te recomiendo repasar la teoría un poco más." : " Estás listo para el siguiente tema."}
+                                    {score < Math.ceil(module.quiz.length * 0.7) ? " Te recomiendo repasar la teoría y volver a intentarlo." : " ¡Dominas este tema!"}
                                 </p>
                                 <button onClick={onBack} className="bg-white text-indigo-700 px-8 py-3 rounded-xl font-bold hover:bg-indigo-50 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                                     Volver al Menú Principal
@@ -559,8 +639,8 @@
                                     <Terminal size={20} />
                                 </div>
                                 <div>
-                                    <h1 className="font-bold text-slate-800 text-lg leading-tight">Recuperación: Algoritmos</h1>
-                                    <p className="text-xs text-slate-500 font-medium hidden md:block">Escuela Secundaria - 5to Año</p>
+                                    <h1 className="font-bold text-slate-800 text-lg leading-tight">Nivelación: Algoritmos</h1>
+                                    <p className="text-xs text-slate-500 font-medium hidden md:block">Práctica de Recuperación - 5to Año</p>
                                 </div>
                             </div>
                             
@@ -584,11 +664,11 @@
                             <div className="fade-in">
                                 <div className="text-center mb-10 py-8">
                                     <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
-                                        Panel de Estudio <span className="text-indigo-600">Inteligente</span>
+                                        Guía de Estudio <span className="text-indigo-600">Interactiva</span>
                                     </h2>
                                     <p className="text-slate-600 max-w-2xl mx-auto text-lg leading-relaxed">
-                                        Hemos transformado tus proyectos de clase (Juegos, Inventario y Agenda) en una guía interactiva. 
-                                        <span className="block mt-2 font-medium text-slate-800">Completa los 5 módulos para asegurar tu aprobado.</span>
+                                        Esta guía te ayudará a reforzar los conceptos fundamentales vistos durante el año.
+                                        <span className="block mt-2 font-medium text-slate-800">Completa los 5 módulos para nivelar tus conocimientos.</span>
                                     </p>
                                 </div>
 
@@ -643,10 +723,9 @@
                                         <Play size={40} fill="currentColor" />
                                     </div>
                                     <div className="text-center md:text-left relative z-10 flex-1">
-                                        <h3 className="font-bold text-slate-800 text-2xl mb-2">Tu Camino al Aprobado</h3>
+                                        <h3 className="font-bold text-slate-800 text-2xl mb-2">¡A Practicar!</h3>
                                         <p className="text-slate-600 text-lg leading-relaxed">
-                                            Esta guía cubre el 100% de los temas. Si logras completar los módulos, 
-                                            <span className="font-bold text-indigo-600"> no tendrás problemas</span> con el cuestionario final ni con los ejercicios de código.
+                                            Recuerda que la programación se aprende programando. Analiza cada error y entiende el "por qué" de cada respuesta.
                                         </p>
                                     </div>
                                 </div>
